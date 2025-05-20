@@ -9,7 +9,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <div className="relative w-[320px] h-[85px]">
+            <div className="relative w-[400px] h-[100px]">
               <Image
                 src="/NexStep.png"
                 alt="NexStep HomeBuyers LLC"
