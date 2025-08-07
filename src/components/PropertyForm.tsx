@@ -196,10 +196,10 @@ export default function PropertyForm() {
             <input
               type="tel"
               placeholder="(555) 555-5555"
-              className={`w-full px-4 py-3 text-lg border rounded-lg transition-colors
+              className={`w-full px-4 py-3 text-lg text-gray-900 border rounded-lg transition-colors
                 ${errors.phone && touched.phone 
                   ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-gray-300 focus:ring-primary'}
+                  : 'border-gray-300 focus:ring-blue-500'}
                 focus:ring-2 focus:border-transparent`}
               value={formState.phone || ''}
               onChange={handlePhoneChange}
@@ -222,7 +222,7 @@ export default function PropertyForm() {
             <label className="flex items-start space-x-3">
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 text-secondary border-gray-300 rounded focus:ring-secondary"
+                className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                 checked={formState.consent || false}
                 onChange={(e) => updateFormData({ consent: e.target.checked })}
                 onBlur={() => handleBlur('consent')}
@@ -254,7 +254,7 @@ export default function PropertyForm() {
                 trackConversion('AW-17041108639', 'sghECKX6-fkYELD4yf8p');
               }
             }}
-            className={`w-full px-4 py-3 text-lg font-semibold text-white bg-secondary rounded-lg hover:bg-secondary/90 transition-colors
+            className={`w-full px-4 py-3 text-lg font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors
               ${(isSubmitting || !formState.phone || !formState.consent || !!errors.phone) ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? (

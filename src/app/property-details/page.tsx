@@ -32,7 +32,7 @@ export default function PropertyDetailsPage() {
               <select
                 value={formState.bedrooms || ''}
                 onChange={(e) => updateFormData({ bedrooms: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select bedrooms</option>
@@ -49,7 +49,7 @@ export default function PropertyDetailsPage() {
               <select
                 value={formState.bathrooms || ''}
                 onChange={(e) => updateFormData({ bathrooms: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select bathrooms</option>
@@ -68,7 +68,7 @@ export default function PropertyDetailsPage() {
                 value={formState.squareFeet || ''}
                 onChange={(e) => updateFormData({ squareFeet: e.target.value })}
                 placeholder="Approximate square footage"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -85,7 +85,7 @@ export default function PropertyDetailsPage() {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
             >
               Continue
             </button>

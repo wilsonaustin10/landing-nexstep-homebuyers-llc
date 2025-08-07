@@ -138,12 +138,12 @@ export default function TermsOfService() {
               <p>
                 If you have any questions about these Terms, please contact us at:
                 <br />
-                <a href="mailto:info@homesellrescue.com" className="text-primary hover:underline">
+                <a href="mailto:info@homesellrescue.com" className="text-blue-900 hover:underline">
                   info@homesellrescue.com
                 </a>
                 <br />
-                <a href="tel:6367928124" className="text-primary hover:underline">
-                  6367928124
+                <a href="tel:6362385598" className="text-blue-900 hover:underline">
+                  (636) 238-5598
                 </a>
               </p>
             </section>

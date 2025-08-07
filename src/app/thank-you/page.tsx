@@ -39,7 +39,7 @@ export default function ThankYouPage() {
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-primary" />
+                <Clock className="h-6 w-6 text-blue-900" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Quick Response</h3>
@@ -51,7 +51,7 @@ export default function ThankYouPage() {
 
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <Phone className="h-6 w-6 text-primary" />
+                <Phone className="h-6 w-6 text-blue-900" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Personal Consultation</h3>
@@ -63,7 +63,7 @@ export default function ThankYouPage() {
 
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <ArrowRight className="h-6 w-6 text-primary" />
+                <ArrowRight className="h-6 w-6 text-blue-900" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Close On Your Timeline</h3>
@@ -82,7 +82,7 @@ export default function ThankYouPage() {
           </p>
           <a 
             href="tel:1234567890" 
-            className="inline-flex items-center justify-center space-x-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center space-x-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
             onClick={() => trackEvent('thank_you_page_call_click')}
           >
             <Phone className="h-5 w-5" />

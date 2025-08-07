@@ -5,13 +5,13 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <header className="bg-white shadow-lg">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-2">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <div className="relative w-[200px] h-[50px] md:w-[400px] md:h-[100px]">
+            <div className="relative w-[100px] h-[80px] md:w-[600px] md:h-[160px]">
               <Image
-                src="/NexStep.png"
+                src="/NexStep Red White Blue 1024px.png"
                 alt="NexStep HomeBuyers LLC"
                 fill
                 style={{ objectFit: 'contain' }}
@@ -23,19 +23,19 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8">
             <Link 
               href="/" 
-              className="text-primary hover:text-accent font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-900 font-medium transition-colors"
             >
               Home
             </Link>
             <Link 
               href="#how-it-works" 
-              className="text-primary hover:text-accent font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-900 font-medium transition-colors"
             >
               How It Works
             </Link>
             <Link 
               href="#testimonials" 
-              className="text-primary hover:text-accent font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-900 font-medium transition-colors"
             >
               Testimonials
             </Link>
@@ -43,7 +43,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link
               href="/#property-form"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-secondary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors"
+              className="inline-flex items-center px-2 py-2 text-sm md:px-4 md:text-base font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all whitespace-nowrap"
             >
               Get Your Offer
             </Link>

@@ -32,8 +32,13 @@ export function useGooglePlaces(
 
   useEffect(() => {
     // Wait for both input ref and Google Maps to be available
-    if (!inputRef.current || !window.google?.maps?.places) {
-      console.log('Waiting for dependencies...');
+    if (!inputRef.current) {
+      return;
+    }
+    
+    // Check if Google Maps is blocked or not loaded
+    if (!window.google?.maps?.places) {
+      console.log('Google Maps Places API not available - falling back to manual input');
       return;
     }
 
@@ -73,6 +78,14 @@ export function useGooglePlaces(
             case 'postal_code': addressData.postalCode = component.long_name; break;
           }
         });
+
+        // Update the input value to match what was selected
+        if (inputRef.current) {
+          inputRef.current.value = place.formatted_address;
+          // Trigger React's onChange event
+          const event = new Event('input', { bubbles: true });
+          inputRef.current.dispatchEvent(event);
+        }
 
         onAddressSelect(addressData);
         

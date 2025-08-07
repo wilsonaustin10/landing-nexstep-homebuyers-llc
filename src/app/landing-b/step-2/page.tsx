@@ -161,7 +161,7 @@ export default function LandingBStep2Page() {
 
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-              What is your asking price for the property? (Optional)
+              What is your asking price for the property?
             </label>
             <input
               id="price"

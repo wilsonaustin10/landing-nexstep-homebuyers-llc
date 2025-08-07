@@ -23,17 +23,15 @@ export default function LeadForm() {
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const addressInputRef = useRef<HTMLInputElement>(null);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(true); // Default to true to allow manual input
   const router = useRouter();
 
   useEffect(() => {
     const checkGoogleMapsLoaded = () => {
       if (window.google?.maps?.places) {
-        setIsGoogleLoaded(true);
+        console.log('Google Maps Places API loaded');
       } else {
-        console.error('Google Maps Places API not loaded');
-        // Retry after a short delay
-        setTimeout(checkGoogleMapsLoaded, 1000);
+        console.log('Google Maps Places API not available - manual input enabled');
       }
     };
 
@@ -140,12 +138,12 @@ export default function LeadForm() {
               ref={addressInputRef}
               type="text"
               placeholder="Enter your property address"
-              className={`w-full px-4 py-3 border rounded-lg transition-colors
+              className={`w-full px-4 py-3 text-gray-900 border rounded-lg transition-colors
                 ${errors.address && touched.address 
                   ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-gray-300 focus:ring-primary'} 
+                  : 'border-gray-300 focus:ring-blue-500'} 
                 focus:ring-2 focus:border-transparent`}
-              defaultValue={formData.address}
+              value={formData.address}
               onChange={(e) => {
                 console.log('Address input changed:', e.target.value);
                 setFormData(prev => ({ ...prev, address: e.target.value }));
@@ -167,10 +165,10 @@ export default function LeadForm() {
             <input
               type="tel"
               placeholder="Your phone number"
-              className={`w-full px-4 py-3 border rounded-lg transition-colors
+              className={`w-full px-4 py-3 text-gray-900 border rounded-lg transition-colors
                 ${errors.phone && touched.phone 
                   ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-gray-300 focus:ring-primary'}
+                  : 'border-gray-300 focus:ring-blue-500'}
                 focus:ring-2 focus:border-transparent`}
               value={formData.phone}
               onChange={(e) => {
@@ -199,7 +197,7 @@ export default function LeadForm() {
 
         <button
           type="submit"
-          className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={loading}
         >
           {loading ? (

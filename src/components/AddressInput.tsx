@@ -3,100 +3,76 @@
 import React, { useRef, useState } from 'react';
 import { useGooglePlaces } from '../hooks/useGooglePlaces';
 import type { AddressData } from '../types/GooglePlacesTypes';
-import { Loader2 } from 'lucide-react';
-import { useForm } from '../context/FormContext';
 
 interface AddressInputProps {
   onAddressSelect?: (addressData: AddressData) => void;
+  onChange?: (value: string) => void;
   className?: string;
   defaultValue?: string;
+  value?: string;
   error?: string;
   readOnly?: boolean;
 }
 
 export default function AddressInput({ 
-  onAddressSelect, 
+  onAddressSelect,
+  onChange, 
   className = '',
   defaultValue = '',
+  value,
   error: externalError,
   readOnly = false
 }: AddressInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<AddressData | null>(null);
-  const [localError, setLocalError] = useState<string>('');
-  const { formState, updateFormData, errors } = useForm();
+  
+  // Use value prop directly if provided, otherwise use defaultValue
+  const displayValue = value !== undefined ? value : defaultValue;
 
   // Handle Google Places selection
-  const handleAddressSelect = async (addressData: AddressData) => {
-    setIsProcessing(true);
+  const handleAddressSelect = (addressData: AddressData) => {
+    setSelectedAddress(addressData);
     
-    try {
-      // Ensure all required fields are present
-      if (!addressData.streetNumber || !addressData.street || !addressData.city || 
-          !addressData.state || !addressData.postalCode || !addressData.placeId) {
-        throw new Error('Incomplete address selected. Please select a full address.');
-      }
-
-      // Update form data with all address components
-      const addressUpdate = {
-        address: addressData.formattedAddress,
-        streetAddress: `${addressData.streetNumber} ${addressData.street}`.trim(),
-        city: addressData.city,
-        state: addressData.state,
-        postalCode: addressData.postalCode,
-        placeId: addressData.placeId
-      };
-      
-      setSelectedAddress(addressData);
-      updateFormData(addressUpdate);
-      
-      if (onAddressSelect) {
-        await onAddressSelect(addressData);
-      }
-    } catch (err) {
-      console.error('Error processing address:', err);
-      setLocalError(err instanceof Error ? err.message : 'Error processing address selection');
-    } finally {
-      setIsProcessing(false);
+    // Notify parent component of the change
+    if (onChange) {
+      onChange(addressData.formattedAddress);
+    }
+    
+    if (onAddressSelect) {
+      onAddressSelect(addressData);
     }
   };
 
-  // Only initialize Google Places if not readOnly
-  if (!readOnly) {
-    useGooglePlaces(inputRef, handleAddressSelect);
-  }
+  // Always call hooks unconditionally (React rule)
+  useGooglePlaces(inputRef, readOnly ? () => {} : handleAddressSelect);
 
-  const error = externalError || localError || errors?.address;
+  const error = externalError;
 
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="relative w-full">
         {readOnly ? (
           <div className="w-full px-4 py-3 text-lg border rounded-lg bg-gray-50">
-            {formState.address}
+            {displayValue}
           </div>
         ) : (
           <input
             ref={inputRef}
             type="text"
             placeholder="Enter your property address"
-            className={`w-full px-4 py-3 text-lg border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all
+            className={`w-full px-4 py-3 text-lg text-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all
               ${error ? 'border-red-500' : 'border-gray-300'}`}
-            defaultValue={defaultValue || formState.address}
-            disabled={isLoading || isProcessing}
+            value={displayValue}
+            onChange={(e) => {
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
             aria-label="Property address"
             aria-invalid={Boolean(error)}
             aria-describedby={error ? 'address-error' : undefined}
             required
           />
-        )}
-        
-        {(isLoading || isProcessing) && !readOnly && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-          </div>
         )}
 
         {error && !readOnly && (

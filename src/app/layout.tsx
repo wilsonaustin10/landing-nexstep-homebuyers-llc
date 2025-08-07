@@ -9,6 +9,8 @@ import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const GOOGLE_MAPS_API_KEY = 'AIzaSyCF--irB1Ja8RLSDoA49sxB1LtZG0YcCPg';
+
 export default function RootLayout({
   children,
 }: {
@@ -18,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`}
           strategy="beforeInteractive"
           onLoad={() => {
             console.log('Google Maps script loaded');

@@ -93,7 +93,7 @@ export default function ContactPage() {
                   value={formState.firstName || ''}
                   onChange={(e) => updateFormData({ firstName: e.target.value })}
                   placeholder="First name"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -106,7 +106,7 @@ export default function ContactPage() {
                   value={formState.lastName || ''}
                   onChange={(e) => updateFormData({ lastName: e.target.value })}
                   placeholder="Last name"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -121,7 +121,7 @@ export default function ContactPage() {
                 value={formState.email || ''}
                 onChange={(e) => updateFormData({ email: e.target.value })}
                 placeholder="your@email.com"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -144,7 +144,7 @@ export default function ContactPage() {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 flex items-center space-x-2"
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center space-x-2"
               disabled={loading}
             >
               {loading ? (
