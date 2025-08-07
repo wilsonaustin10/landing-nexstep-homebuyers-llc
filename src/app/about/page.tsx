@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -11,19 +10,9 @@ export default function AboutPage() {
         </h1>
         
         <div className="bg-white p-8 rounded-lg shadow-lg space-y-6">
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/"
-              alt="NexStep HomeBuyers LLC"
-              width={300}
-              height={80}
-              className="mb-6"
-            />
-          </div>
-          
           <h2 className="text-2xl font-semibold text-blue-900 mb-4">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed mb-6">
-            At CNexStep HomeBuyers LLC, we're more than just property investors – our team has a genuine passion for helping families navigate through difficult situations. We understand that life can throw unexpected challenges your way, and selling your home quickly might be necessary during these times.
+            At NexStep HomeBuyers LLC, we're more than just property investors – our team has a genuine passion for helping families navigate through difficult situations. We understand that life can throw unexpected challenges your way, and selling your home quickly might be necessary during these times.
           </p>
           
           <p className="text-gray-700 leading-relaxed mb-6">

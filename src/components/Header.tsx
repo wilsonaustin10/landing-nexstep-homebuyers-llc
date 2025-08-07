@@ -11,7 +11,7 @@ export default function Header() {
           <Link href="/" className="flex items-center">
             <div className="relative w-[100px] h-[80px] md:w-[600px] md:h-[160px]">
               <Image
-                src="/NexStep Red White Blue 1024px.png"
+                src="/Nexstep Red White Blue 1024px.png"
                 alt="NexStep HomeBuyers LLC"
                 fill
                 style={{ objectFit: 'contain' }}

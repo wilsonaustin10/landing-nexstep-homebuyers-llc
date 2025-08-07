@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center">
               <Image
-                src="/NexStep Red White Blue 1024px.png"
+                src="/Nexstep Red White Blue 1024px.png"
                 alt="NexStep HomeBuyers LLC"
                 width={120}
                 height={120}
