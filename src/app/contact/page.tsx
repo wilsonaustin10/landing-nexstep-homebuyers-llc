@@ -28,8 +28,11 @@ export default function ContactPage() {
     setError(null);
     
     try {
+      // Ensure leadId exists
+      const leadId = formState.leadId || `lead_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      
       // Submit complete form data to Google Sheets
-      console.log('Submitting complete form data:', formState);
+      console.log('Submitting complete form data:', { ...formState, leadId });
       const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: {
@@ -37,6 +40,7 @@ export default function ContactPage() {
         },
         body: JSON.stringify({
           ...formState,
+          leadId,
           lastUpdated: new Date().toISOString()
         })
       });

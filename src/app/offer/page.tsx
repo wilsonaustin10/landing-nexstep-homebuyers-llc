@@ -37,19 +37,33 @@ function OfferPageContent() {
 
   const handleFormSubmit = async (formData: any) => {
     try {
+      // Ensure leadId is unique
+      const leadId = `offer-${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      
+      // Extract first and last name from full name
+      const nameParts = formData.full_name.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      // Remove $ and commas from price for storage
+      const cleanPrice = formData.price ? formData.price.replace(/[$,]/g, '') : '';
+      
       const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          leadId: `offer-${Date.now()}`,
+          leadId,
           source: 'offer-page',
-          firstName: formData.full_name.split(' ')[0],
-          lastName: formData.full_name.split(' ').slice(1).join(' '),
+          firstName,
+          lastName,
+          email: formData.email,
+          phone: formData.phone,
           address: formData.address,
           propertyCondition: formData.condition,
           timeframe: formData.sell_timing,
-          price: 'TBD',
+          price: cleanPrice,
+          consent: formData.consent,
+          timestamp: new Date().toISOString()
         }),
       });
 

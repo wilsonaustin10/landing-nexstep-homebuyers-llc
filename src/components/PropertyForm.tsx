@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from '../context/FormContext';
 import AddressInput from './AddressInput';
 import type { AddressData } from '../types/GooglePlacesTypes';
 import { trackEvent, trackConversion } from '../utils/analytics';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Check } from 'lucide-react';
+import { basicPhoneValidation } from '../utils/phoneValidation';
 
 interface FormErrors {
   address?: string;
@@ -20,12 +21,39 @@ export default function PropertyForm() {
   const { formState, updateFormData } = useForm();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidatingPhone, setIsValidatingPhone] = useState(false);
+  const [phoneValidated, setPhoneValidated] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const phoneValidationTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const validatePhone = (phone: string): boolean => {
-    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-    return phoneRegex.test(phone);
+  const validatePhoneNumber = async (phone: string) => {
+    // First do basic validation
+    const basicValidation = basicPhoneValidation(phone);
+    if (!basicValidation.isValid) {
+      return basicValidation;
+    }
+
+    // Then validate with Numverify API
+    try {
+      setIsValidatingPhone(true);
+      const response = await fetch('/api/validate-phone', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone }),
+      });
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Phone validation error:', error);
+      // On error, return success to not block submission
+      return { isValid: true, message: 'Phone validation service unavailable' };
+    } finally {
+      setIsValidatingPhone(false);
+    }
   };
 
   const handleBlur = (field: keyof FormErrors) => {
@@ -54,27 +82,67 @@ export default function PropertyForm() {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     updateFormData({ phone: formatted });
+    setPhoneValidated(false);
     
-    // Validate phone if touched
-    if (touched.phone) {
+    // Clear any previous validation timeout
+    if (phoneValidationTimeoutRef.current) {
+      clearTimeout(phoneValidationTimeoutRef.current);
+    }
+    
+    // Basic validation first
+    const phoneDigits = formatted.replace(/\D/g, '');
+    if (phoneDigits.length !== 10 && touched.phone) {
       setErrors(prev => ({
         ...prev,
-        phone: validatePhone(formatted) ? undefined : 'Please enter a valid phone number'
+        phone: phoneDigits.length < 10 ? 'Phone number must be 10 digits' : undefined
       }));
+    } else {
+      // Clear error while typing valid length
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.phone;
+        return newErrors;
+      });
+      
+      // Validate with API after user stops typing (debounced)
+      if (phoneDigits.length === 10) {
+        phoneValidationTimeoutRef.current = setTimeout(async () => {
+          const validation = await validatePhoneNumber(formatted);
+          if (!validation.isValid) {
+            setErrors(prev => ({ ...prev, phone: validation.message || 'Please enter a real phone number' }));
+          } else {
+            setPhoneValidated(true);
+            setErrors(prev => {
+              const newErrors = { ...prev };
+              delete newErrors.phone;
+              return newErrors;
+            });
+          }
+        }, 500); // 500ms debounce
+      }
     }
   };
 
-  const validateForm = (): boolean => {
+  const validateForm = async (): Promise<boolean> => {
     const newErrors: FormErrors = {};
 
     if (!formState.address?.trim()) {
       newErrors.address = 'Please enter a valid property address';
     }
 
+    const phoneDigits = formState.phone?.replace(/\D/g, '') || '';
     if (!formState.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!validatePhone(formState.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+    } else if (phoneDigits.length !== 10) {
+      newErrors.phone = 'Phone number must be 10 digits';
+    } else if (!phoneValidated) {
+      // Validate phone if not already validated
+      const validation = await validatePhoneNumber(formState.phone);
+      if (!validation.isValid) {
+        newErrors.phone = validation.message || 'Please enter a real phone number';
+      } else {
+        setPhoneValidated(true);
+      }
     }
 
     if (!formState.consent) {
@@ -87,85 +155,31 @@ export default function PropertyForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate form before submission
-    const validationErrors: Record<string, string> = {};
-    
-    if (!formState.address?.trim()) {
-      validationErrors.address = 'Address is required';
-    }
-    
-    if (!formState.phone?.trim()) {
-      validationErrors.phone = 'Phone number is required';
-    } else if (!/^\(\d{3}\) \d{3}-\d{4}$/.test(formState.phone)) {
-      validationErrors.phone = 'Invalid phone format. Please use (XXX) XXX-XXXX';
-    }
-
-    if (!formState.consent) {
-      validationErrors.consent = 'You must consent to be contacted';
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
     setIsSubmitting(true);
-    setErrors({});
-
+    
     try {
-      const dataToSubmit = {
-        ...formState,
-        lastUpdated: new Date().toISOString()
-      };
-
-      console.log('Submitting form data:', {
-        address: dataToSubmit.address,
-        phone: dataToSubmit.phone,
-        consent: dataToSubmit.consent
-      });
-
-      const response = await fetch('/api/submit-partial', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSubmit)
-      });
-
-      let result;
-      try {
-        const text = await response.text();
-        result = text ? JSON.parse(text) : {};
-        if (!response.ok) {
-          console.error('API error response:', text);
-          throw new Error(`API error: ${response.status} ${response.statusText}`);
-        }
-      } catch (parseError) {
-        console.error('Error parsing API response:', parseError);
-        throw new Error(`Failed to parse API response: ${response.status} ${response.statusText}`);
-      }
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to save lead data');
+      // Validate form before submission
+      const isValid = await validateForm();
+      if (!isValid) {
+        setIsSubmitting(false);
+        return;
       }
 
-      // Store leadId in form state for later use
-      updateFormData({ leadId: result.leadId });
+      // Generate a unique leadId for tracking
+      const leadId = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      updateFormData({ leadId });
 
-      trackEvent('form_submitted', { 
+      trackEvent('initial_form_completed', { 
         address: formState.address,
-        hasPhone: !!formState.phone
+        hasPhone: !!formState.phone,
+        phoneValidated: phoneValidated
       });
 
+      // Navigate to property-listed page to continue collecting information
       router.push('/property-listed');
-
     } catch (error) {
       console.error('Form submission error:', error);
-      setErrors(prev => ({
-        ...prev,
-        submit: error instanceof Error ? error.message : 'An error occurred'
-      }));
+      setErrors({ submit: 'An error occurred. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -199,7 +213,9 @@ export default function PropertyForm() {
               className={`w-full px-4 py-3 text-lg text-gray-900 border rounded-lg transition-colors
                 ${errors.phone && touched.phone 
                   ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-gray-300 focus:ring-blue-500'}
+                  : phoneValidated 
+                    ? 'border-green-500 focus:ring-green-500'
+                    : 'border-gray-300 focus:ring-blue-500'}
                 focus:ring-2 focus:border-transparent`}
               value={formState.phone || ''}
               onChange={handlePhoneChange}
@@ -214,6 +230,18 @@ export default function PropertyForm() {
               <div id="phone-error" className="flex items-center space-x-1 text-red-500 text-sm">
                 <AlertCircle className="h-4 w-4" />
                 <span>{errors.phone}</span>
+              </div>
+            )}
+            {isValidatingPhone && (
+              <div className="flex items-center space-x-1 text-gray-500 text-sm">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Validating phone...</span>
+              </div>
+            )}
+            {phoneValidated && !errors.phone && (
+              <div className="flex items-center space-x-1 text-green-600 text-sm">
+                <Check className="h-4 w-4" />
+                <span>Phone verified</span>
               </div>
             )}
           </div>

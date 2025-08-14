@@ -131,50 +131,12 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Handle initial partial submission
-  const submitPartialLead = async (): Promise<SubmissionResponse> => {
-    // Validate required fields
-    if (!formState.address || !formState.phone || !formState.consent) {
-      return { success: false, error: 'Address, phone, and consent are required' };
-    }
-
-    try {
-      const response = await fetch('/api/submit-partial', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          address: formState.address,
-          phone: formState.phone,
-          consent: formState.consent
-        })
-      });
-
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit partial lead');
-      }
-
-      // Store leadId for later use
-      updateFormData({ leadId: result.leadId });
-      return { success: true, leadId: result.leadId };
-    } catch (error) {
-      console.error('Error submitting partial lead:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      };
-    }
-  };
 
   // Modified step completion handler
   const isStepComplete = (step: FormStep): boolean => {
     switch (step) {
       case 'initial':
-        // Submit partial lead when first step is completed
-        if (formState.address && formState.phone && !formState.leadId) {
-          submitPartialLead();
-        }
+        // Check if initial required fields are completed
         return Boolean(formState.address && formState.phone);
       case 'property-details':
         return Boolean(formState.propertyCondition);

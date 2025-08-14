@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronRight, Phone, Mail, Home, Clock, Wrench, Check, AlertCircle, DollarSign } from 'lucide-react';
+import { ChevronRight, Phone, Mail, Home, Clock, Wrench, Check, AlertCircle, DollarSign, Loader2 } from 'lucide-react';
 import AddressInput from './AddressInput';
 import type { AddressData } from '../types/GooglePlacesTypes';
+import { basicPhoneValidation } from '../utils/phoneValidation';
 
 interface FormData {
   address: string;
@@ -30,9 +31,12 @@ interface MultiStepFormProps {
 export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'ST' }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidatingPhone, setIsValidatingPhone] = useState(false);
+  const [phoneValidated, setPhoneValidated] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const errorSummaryRef = useRef<HTMLDivElement>(null);
+  const phoneValidationTimeoutRef = useRef<NodeJS.Timeout>();
   
   const [formData, setFormData] = useState<FormData>({
     address: '',
@@ -96,6 +100,36 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
     });
   };
 
+  const validatePhoneNumber = async (phone: string) => {
+    // First do basic validation
+    const basicValidation = basicPhoneValidation(phone);
+    if (!basicValidation.isValid) {
+      return basicValidation;
+    }
+
+    // Then validate with Numverify API
+    try {
+      setIsValidatingPhone(true);
+      const response = await fetch('/api/validate-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+
+      const result = await response.json();
+      return {
+        isValid: result.isValid,
+        message: result.message || (result.isValid ? undefined : 'Please enter a real phone number')
+      };
+    } catch (error) {
+      console.error('Phone validation error:', error);
+      // On error, allow the phone but mark as not validated
+      return { isValid: true, message: undefined };
+    } finally {
+      setIsValidatingPhone(false);
+    }
+  };
+
   const handleFieldChange = (field: string, value: any) => {
     if (!touched.has(field) && typeof window !== 'undefined' && window.dataLayer) {
       window.dataLayer.push({
@@ -107,6 +141,29 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
 
     if (field === 'phone') {
       value = formatPhoneNumber(value);
+      setPhoneValidated(false);
+      
+      // Clear any existing timeout
+      if (phoneValidationTimeoutRef.current) {
+        clearTimeout(phoneValidationTimeoutRef.current);
+      }
+      
+      // Validate phone after user stops typing for 1 second
+      if (value.replace(/\D/g, '').length === 10) {
+        phoneValidationTimeoutRef.current = setTimeout(async () => {
+          const validation = await validatePhoneNumber(value);
+          if (!validation.isValid) {
+            setErrors(prev => ({ ...prev, phone: validation.message || 'Please enter a real phone number' }));
+          } else {
+            setPhoneValidated(true);
+            setErrors(prev => {
+              const newErrors = { ...prev };
+              delete newErrors.phone;
+              return newErrors;
+            });
+          }
+        }, 1000);
+      }
     }
 
     if (field === 'price') {
@@ -115,7 +172,7 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
 
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    if (errors[field]) {
+    if (errors[field] && field !== 'phone') {
       setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
@@ -135,7 +192,7 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep2 = (): boolean => {
+  const validateStep2 = async (): Promise<boolean> => {
     const newErrors: FormErrors = {};
     
     if (!formData.full_name.trim()) {
@@ -147,10 +204,26 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
       newErrors.phone = 'Enter your phone number';
     } else if (phoneDigits.length !== 10) {
       newErrors.phone = 'Enter a valid 10-digit phone number';
+    } else if (!phoneValidated) {
+      // Validate phone if not already validated
+      const validation = await validatePhoneNumber(formData.phone);
+      if (!validation.isValid) {
+        newErrors.phone = validation.message || 'Please enter a real phone number';
+      } else {
+        setPhoneValidated(true);
+      }
     }
     
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // Email is now required
+    if (!formData.email) {
+      newErrors.email = 'Enter your email address';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Enter a valid email address';
+    }
+    
+    // Price is now required
+    if (!formData.price) {
+      newErrors.price = 'Enter your desired price for a cash offer';
     }
     
     if (!formData.sell_timing) {
@@ -178,11 +251,14 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateStep2()) {
+    setIsSubmitting(true);
+    const isValid = await validateStep2();
+    
+    if (!isValid) {
+      setIsSubmitting(false);
       return;
     }
     
-    setIsSubmitting(true);
     try {
       await onSubmit(formData);
       
@@ -318,22 +394,37 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
               onChange={(e) => handleFieldChange('phone', e.target.value)}
               autoComplete="tel"
               placeholder="(555) 123-4567"
+              required
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? 'err_phone' : undefined}
               className={`w-full px-4 py-3 text-gray-900 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
-                errors.phone ? 'border-red-500' : 'border-gray-300'
+                errors.phone ? 'border-red-500' : phoneValidated ? 'border-green-500' : 'border-gray-300'
               }`}
             />
-            {errors.phone && (
-              <p id="err_phone" className="mt-1 text-sm text-red-600">
-                {errors.phone}
-              </p>
-            )}
+            <div className="mt-1 flex items-center justify-between">
+              {errors.phone && (
+                <p id="err_phone" className="text-sm text-red-600">
+                  {errors.phone}
+                </p>
+              )}
+              {isValidatingPhone && (
+                <p className="text-sm text-gray-500 flex items-center">
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  Validating phone...
+                </p>
+              )}
+              {phoneValidated && !errors.phone && (
+                <p className="text-sm text-green-600 flex items-center">
+                  <Check className="w-4 h-4 mr-1" />
+                  Phone verified
+                </p>
+              )}
+            </div>
           </div>
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               id="email"
@@ -341,6 +432,8 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
               value={formData.email}
               onChange={(e) => handleFieldChange('email', e.target.value)}
               autoComplete="email"
+              placeholder="your@email.com"
+              required
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'err_email' : undefined}
               className={`w-full px-4 py-3 text-gray-900 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
@@ -356,13 +449,14 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
 
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-              Best price for a cash offer?
+              Best price for a cash offer? <span className="text-red-500">*</span>
             </label>
             <input
               id="price"
               type="text"
               inputMode="numeric"
               placeholder="$150,000"
+              required
               value={formData.price}
               onChange={(e) => handleFieldChange('price', e.target.value)}
               aria-invalid={!!errors.price}

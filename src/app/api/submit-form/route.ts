@@ -2,30 +2,49 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { LeadFormData } from '@/types';
 import { rateLimit } from '@/utils/rateLimit';
+import { validatePhoneWithNumverify } from '@/utils/phoneValidation';
 
 // Validate complete form data
-function validateFormData(data: Partial<LeadFormData>): data is LeadFormData {
+async function validateFormData(data: Partial<LeadFormData>): Promise<boolean> {
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid data format');
   }
 
-  // Required fields validation
-  const requiredFields: (keyof LeadFormData)[] = [
-    'address', 'phone', 'firstName', 'lastName', 
-    'email', 'propertyCondition', 'timeframe', 'price',
-    'leadId'
+  // Required fields validation with better error messages
+  const requiredFields: { field: keyof LeadFormData; displayName: string }[] = [
+    { field: 'address', displayName: 'Property address' },
+    { field: 'phone', displayName: 'Phone number' },
+    { field: 'firstName', displayName: 'First name' },
+    { field: 'lastName', displayName: 'Last name' },
+    { field: 'email', displayName: 'Email address' },
+    { field: 'propertyCondition', displayName: 'Property condition' },
+    { field: 'timeframe', displayName: 'Selling timeframe' },
+    { field: 'price', displayName: 'Desired price' },
+    { field: 'leadId', displayName: 'Lead ID' }
   ];
   
-  for (const field of requiredFields) {
-    if (!data[field]) {
-      throw new Error(`${field} is required`);
+  for (const { field, displayName } of requiredFields) {
+    if (!data[field] || (typeof data[field] === 'string' && !(data[field] as string).trim())) {
+      throw new Error(`${displayName} is required`);
     }
   }
 
-  // Phone number validation
+  // Phone number format validation
   const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
   if (!phoneRegex.test(data.phone as string)) {
-    throw new Error('Invalid phone number format');
+    throw new Error('Invalid phone number format. Expected format: (XXX) XXX-XXXX');
+  }
+
+  // Validate phone with Numverify for extra verification
+  const phoneValidation = await validatePhoneWithNumverify(data.phone as string);
+  if (!phoneValidation.isValid) {
+    throw new Error(phoneValidation.message || 'Invalid phone number');
+  }
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(data.email as string)) {
+    throw new Error('Invalid email address format');
   }
 
   return true;
@@ -122,10 +141,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!validateFormData(data)) {
-      console.error('Invalid form data:', data);
+    // Validate form data (now async with phone validation)
+    try {
+      await validateFormData(data);
+    } catch (validationError) {
+      const errorMessage = validationError instanceof Error ? validationError.message : 'Invalid form data';
+      console.error('Form validation error:', errorMessage);
       return NextResponse.json(
-        { error: 'Invalid form data - Missing required fields or invalid format' },
+        { error: errorMessage },
         { status: 400 }
       );
     }
