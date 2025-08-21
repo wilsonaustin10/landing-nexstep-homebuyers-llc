@@ -89,6 +89,17 @@ export function useGooglePlaces(
 
         onAddressSelect(addressData);
         
+        // Force close the dropdown by removing focus and hiding pac-container
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
+        
+        // Hide any visible pac-container elements
+        const pacContainers = document.querySelectorAll('.pac-container');
+        pacContainers.forEach(container => {
+          (container as HTMLElement).style.display = 'none';
+        });
+        
         // Create a new session token after selection
         sessionTokenRef.current = new google.maps.places.AutocompleteSessionToken();
       });

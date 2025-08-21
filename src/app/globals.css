@@ -15,6 +15,11 @@
   font-family: inherit;
 }
 
+/* Hide pac-container when input is not focused */
+.pac-container:empty {
+  display: none !important;
+}
+
 .pac-item {
   cursor: pointer;
   padding: 12px 16px;

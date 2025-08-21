@@ -60,7 +60,7 @@ export default function AddressInput({
             ref={inputRef}
             type="text"
             placeholder="Enter your property address"
-            className={`w-full px-4 py-3 text-lg text-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all
+            className={`w-full px-4 py-3 text-lg text-gray-900 bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all
               ${error ? 'border-red-500' : 'border-gray-300'}`}
             value={displayValue}
             onChange={(e) => {

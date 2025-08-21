@@ -73,7 +73,17 @@ export default function PropertyForm() {
     updateFormData(addressData);
     setErrors(prev => ({ ...prev, address: undefined }));
     setTouched(prev => ({ ...prev, address: true }));
-    setStep(2);
+    
+    // Close Google Places dropdown by blurring the input
+    const addressInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+    if (addressInput) {
+      addressInput.blur();
+    }
+    
+    // Small delay to ensure dropdown closes before transitioning
+    setTimeout(() => {
+      setStep(2);
+    }, 100);
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -193,7 +203,7 @@ export default function PropertyForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white/90 p-6 rounded-lg shadow-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
       {step === 1 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">Enter Your Property Address</h2>
