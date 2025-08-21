@@ -209,6 +209,8 @@ export default function PropertyForm() {
           <h2 className="text-xl font-semibold text-gray-800">Enter Your Property Address</h2>
           <AddressInput 
             onAddressSelect={handleAddressSelect}
+            value={formState.address || ''}
+            onChange={(value) => updateFormData({ address: value })}
             error={touched.address ? errors.address : undefined}
           />
           {errors.address && touched.address && (
@@ -217,6 +219,21 @@ export default function PropertyForm() {
               <span>{errors.address}</span>
             </div>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              if (formState.address && formState.address.trim()) {
+                setTouched(prev => ({ ...prev, address: true }));
+                setStep(2);
+              } else {
+                setErrors(prev => ({ ...prev, address: 'Please enter your property address' }));
+                setTouched(prev => ({ ...prev, address: true }));
+              }
+            }}
+            className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors font-semibold"
+          >
+            Continue
+          </button>
         </div>
       )}
 

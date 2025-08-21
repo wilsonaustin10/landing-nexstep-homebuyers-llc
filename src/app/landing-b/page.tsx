@@ -155,7 +155,8 @@ export default function LandingBPage() {
               </label>
               <AddressInput
                 onAddressSelect={handleAddressSelect}
-                defaultValue={formState.address || ''}
+                value={formState.address || ''}
+                onChange={(value) => updateFormData({ address: value })}
                 className="mt-1"
                 error={localErrors.address}
               />
