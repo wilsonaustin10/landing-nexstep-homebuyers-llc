@@ -85,7 +85,7 @@ export default function LandingBPage() {
     } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formState.email)) {
       errors.email = 'Invalid email format.';
     }
-    if (!formState.consent) errors.consent = 'You must agree to the terms.';
+    // Consent is now optional per 10DLC requirements
     
     setLocalErrors(errors);
     return Object.keys(errors).length === 0;
@@ -221,7 +221,7 @@ export default function LandingBPage() {
               {localErrors.email && <p className="mt-1 text-xs text-red-600">{localErrors.email}</p>}
             </div>
 
-            <div className="flex items-start">
+            <div className="flex items-start pt-2">
               <div className="flex items-center h-5">
                 <input
                   id="consent"
@@ -232,13 +232,19 @@ export default function LandingBPage() {
                     updateFormData({ consent: e.target.checked });
                     setLocalErrors(prev => ({ ...prev, consent: '' }));
                   }}
-                  className="focus:ring-accent h-4 w-4 text-accent border-gray-300 rounded"
-                  required
+                  className="focus:ring-accent h-4 w-4 text-accent border-gray-300 rounded flex-shrink-0"
                 />
               </div>
               <div className="ml-3 text-sm">
-                <label htmlFor="consent" className="font-medium text-gray-700">
-                  I agree to be contacted about my property.
+                <label htmlFor="consent" className="font-medium text-gray-700 leading-relaxed">
+                  I agree to be contacted about my property. By checking this box, I agree to the{' '}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                    Terms and Conditions
+                  </a>{' '}
+                  and{' '}
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                    Privacy Policy
+                  </a>.
                 </label>
                 {localErrors.consent && <p className="mt-1 text-xs text-red-600">{localErrors.consent}</p>}
               </div>

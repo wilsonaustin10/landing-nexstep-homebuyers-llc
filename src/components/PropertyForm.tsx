@@ -145,9 +145,8 @@ export default function PropertyForm() {
       }
     }
 
-    if (!formState.consent) {
-      newErrors.consent = 'You must consent to be contacted';
-    }
+    // Consent is now optional per 10DLC requirements
+    // Users can submit without checking the consent box
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -246,18 +245,24 @@ export default function PropertyForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 pt-2">
             <label className="flex items-start space-x-3">
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500 flex-shrink-0"
                 checked={formState.consent || false}
                 onChange={(e) => updateFormData({ consent: e.target.checked })}
                 onBlur={() => handleBlur('consent')}
-                required
               />
-              <span className="text-sm text-gray-600">
-                By checking this box, I consent to being contacted by phone, email, or text message about my property sale inquiry, including through auto-dialed or pre-recorded messages.
+              <span className="text-sm text-gray-600 leading-relaxed">
+                By checking this box, I consent to being contacted by phone, email, or text message about my property sale inquiry, including through auto-dialed or pre-recorded messages. I agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                  Terms and Conditions
+                </a>{' '}
+                and{' '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                  Privacy Policy
+                </a>.
               </span>
             </label>
             {errors.consent && touched.consent && (
@@ -276,9 +281,9 @@ export default function PropertyForm() {
 
           <button
             type="submit"
-            disabled={isSubmitting || !formState.phone || !formState.consent || !!errors.phone}
+            disabled={isSubmitting || !formState.phone || !!errors.phone}
             onClick={() => {
-              if (formState.phone && formState.consent && !errors.phone && !isSubmitting) {
+              if (formState.phone && !errors.phone && !isSubmitting) {
                 trackConversion('AW-17041108639', 'sghECKX6-fkYELD4yf8p');
               }
             }}
