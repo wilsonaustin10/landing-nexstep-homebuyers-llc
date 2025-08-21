@@ -49,8 +49,12 @@ export default function PropertyForm() {
       return result;
     } catch (error) {
       console.error('Phone validation error:', error);
-      // On error, return success to not block submission
-      return { isValid: true, message: 'Phone validation service unavailable' };
+      // On error, return success but flag for manual verification
+      return { 
+        isValid: true, 
+        message: 'Unable to verify phone - will be validated manually',
+        requiresManualVerification: true 
+      };
     } finally {
       setIsValidatingPhone(false);
     }
@@ -111,6 +115,10 @@ export default function PropertyForm() {
           if (!validation.isValid) {
             setErrors(prev => ({ ...prev, phone: validation.message || 'Please enter a real phone number' }));
           } else {
+            if (validation.requiresManualVerification) {
+              // Show info message but don't block submission
+              setErrors(prev => ({ ...prev, phone: undefined }));
+            }
             setPhoneValidated(true);
             setErrors(prev => {
               const newErrors = { ...prev };
@@ -249,13 +257,13 @@ export default function PropertyForm() {
             <label className="flex items-start space-x-3">
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500 flex-shrink-0"
+                className="mt-1 h-5 w-5 text-red-600 border-gray-300 rounded focus:ring-red-500 flex-shrink-0"
                 checked={formState.consent || false}
                 onChange={(e) => updateFormData({ consent: e.target.checked })}
                 onBlur={() => handleBlur('consent')}
               />
               <span className="text-sm text-gray-600 leading-relaxed">
-                By checking this box, I consent to being contacted by phone, email, or text message about my property sale inquiry, including through auto-dialed or pre-recorded messages. I agree to the{' '}
+                By checking this box, I consent to being contacted by phone, email, or text message about my property sale inquiry, including through auto-dialed or pre-recorded messages. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe or HELP for help. I agree to the{' '}
                 <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                   Terms and Conditions
                 </a>{' '}
@@ -288,7 +296,7 @@ export default function PropertyForm() {
               }
             }}
             className={`w-full px-4 py-3 text-lg font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors
-              ${(isSubmitting || !formState.phone || !formState.consent || !!errors.phone) ? 'opacity-70 cursor-not-allowed' : ''}`}
+              ${(isSubmitting || !formState.phone || !!errors.phone) ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center">

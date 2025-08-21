@@ -232,12 +232,12 @@ export default function LandingBPage() {
                     updateFormData({ consent: e.target.checked });
                     setLocalErrors(prev => ({ ...prev, consent: '' }));
                   }}
-                  className="focus:ring-accent h-4 w-4 text-accent border-gray-300 rounded flex-shrink-0"
+                  className="focus:ring-accent h-5 w-5 text-accent border-gray-300 rounded flex-shrink-0"
                 />
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="consent" className="font-medium text-gray-700 leading-relaxed">
-                  I agree to be contacted about my property. By checking this box, I agree to the{' '}
+                  I agree to be contacted about my property. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe or HELP for help. By checking this box, I agree to the{' '}
                   <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                     Terms and Conditions
                   </a>{' '}

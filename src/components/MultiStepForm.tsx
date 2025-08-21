@@ -234,9 +234,7 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
       newErrors.condition = 'Select your property condition';
     }
     
-    if (!formData.consent) {
-      newErrors.consent = 'You must agree to be contacted';
-    }
+    // Consent is optional per 10DLC requirements - users can submit without checking
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -536,10 +534,10 @@ export default function MultiStepForm({ onSubmit, city = 'Your City', state = 'S
                 type="checkbox"
                 checked={formData.consent}
                 onChange={(e) => handleFieldChange('consent', e.target.checked)}
-                className="mt-1 mr-3 text-red-600 focus:ring-red-500"
+                className="mt-1 mr-3 h-5 w-5 text-red-600 focus:ring-red-500"
               />
               <span className="text-sm text-gray-600">
-                I agree to be contacted by NexStep Homebuyers about my property. I understand that consent is not a condition of purchase.
+                I agree to be contacted by NexStep Homebuyers about my property. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe or HELP for help. I understand that consent is not a condition of purchase.
               </span>
             </label>
             {errors.consent && (
