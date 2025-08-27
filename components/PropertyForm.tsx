@@ -178,7 +178,7 @@ export default function PropertyForm() {
     <form onSubmit={handleSubmit} className="space-y-4 bg-white/90 p-6 rounded-lg shadow-lg">
       {step === 1 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">Enter Your Property Address</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Enter Address to Get Your Offer</h2>
           <AddressInput 
             onAddressSelect={handleAddressSelect}
             error={touched.address ? errors.address : undefined}

@@ -101,7 +101,7 @@ export default function AddressInput({
           <input
             ref={inputRef}
             type="text"
-            placeholder="Enter your property address"
+            placeholder="Property address"
             className={`w-full px-4 py-3 text-lg border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all
               ${error ? 'border-red-500' : 'border-gray-300'}`}
             defaultValue={defaultValue || formState.address}
