@@ -49,7 +49,7 @@ export const trackLeadFormSubmission = (additionalParams?: Record<string, any>) 
   if (typeof window !== 'undefined' && window.gtag) {
     // This is the conversion Google Ads is looking for
     window.gtag('event', 'conversion', {
-      'send_to': 'AW-17359126152/c162CKD-jfIaEIj9vNVA',
+      'send_to': 'AW-16906023932/lead_form',
       'value': 1.0,
       'currency': 'USD',
       ...additionalParams

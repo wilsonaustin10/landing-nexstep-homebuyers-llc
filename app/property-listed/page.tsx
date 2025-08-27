@@ -18,7 +18,7 @@ export default function PropertyListedPage() {
     // Google Ads conversion tracking for partial lead
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'conversion', {
-        'send_to': 'AW-17041108639/sghECKX6-fkYELD4yf8p',
+        'send_to': 'AW-16906023932/property_listed',
       });
     }
   }, []);

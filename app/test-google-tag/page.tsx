@@ -45,8 +45,7 @@ export default function TestGoogleTag() {
         <div className="mt-4">
           <h3 className="font-semibold">Configured Tags:</h3>
           <ul className="list-disc pl-5 mt-2">
-            <li>Google Ads: AW-17359126152</li>
-            <li>Google Ads: AW-17041108639</li>
+            <li>Google Ads: AW-16906023932</li>
             {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
               <li>Google Analytics: {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}</li>
             )}
@@ -73,7 +72,7 @@ export default function TestGoogleTag() {
           
           <button
             onClick={() => sendTestEvent('conversion', { 
-              send_to: 'AW-17359126152/test-conversion',
+              send_to: 'AW-16906023932/test-conversion',
               value: 1.0,
               currency: 'USD'
             })}

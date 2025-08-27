@@ -16,11 +16,10 @@ export default function RootLayout({
         {/* Google Site Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="google-site-verification-code" />
         
-        {/* CRITICAL: Google Tag (gtag.js) - MUST be in <head> for Google to detect it */}
-        {/* Using standard script tags as Google requires - not Next.js Script component */}
+        {/* Google tag (gtag.js) */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17359126152"
+          src="https://www.googletagmanager.com/gtag/js?id=AW-16906023932"
         />
         <script
           dangerouslySetInnerHTML={{
@@ -29,18 +28,7 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               
-              // Google Ads Conversion Tracking
-              gtag('config', 'AW-17359126152', {
-                'page_path': window.location.pathname,
-              });
-              gtag('config', 'AW-17041108639', {
-                'page_path': window.location.pathname,
-              });
-              
-              // Google Tag Manager
-              gtag('config', 'GT-5R7D6GDF', {
-                'page_path': window.location.pathname,
-              });
+              gtag('config', 'AW-16906023932');
               
               // Google Analytics (if you have a GA4 property)
               ${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? `gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');` : ''}
@@ -53,7 +41,7 @@ export default function RootLayout({
                   }
                 };
                 gtag('event', 'conversion', {
-                  'send_to': 'AW-17359126152/ySOKCIbjj4obEIj9vNVA',
+                  'send_to': 'AW-16906023932/phone_conversion',
                   'value': 1.0,
                   'currency': 'USD',
                   'event_callback': callback

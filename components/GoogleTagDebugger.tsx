@@ -67,8 +67,7 @@ export default function GoogleTagDebugger() {
           <div className="mb-4">
             <p className="font-semibold">Configured Tags:</p>
             <ul className="text-sm text-gray-700">
-              <li>• AW-17359126152 (Google Ads)</li>
-              <li>• AW-17041108639 (Google Ads)</li>
+              <li>• AW-16906023932 (Google Ads)</li>
               {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
                 <li>• {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} (GA4)</li>
               )}
