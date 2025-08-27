@@ -44,6 +44,16 @@ interface FormData {
   consent: boolean;
 }
 
+interface FormErrors {
+  address?: string;
+  phone?: string;
+  fullName?: string;
+  email?: string;
+  propertyCondition?: string;
+  timeline?: string;
+  consent?: string;
+}
+
 const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
   const router = useRouter();
   
@@ -64,7 +74,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== 'undefined') {
@@ -129,7 +139,8 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
         fullName: '',
         email: '',
         propertyCondition: '',
-        timeline: ''
+        timeline: '',
+        consent: false
       });
       setCurrentStep(1);
       setErrors({});
@@ -146,7 +157,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
   }, []);
 
   const isStepValid = useCallback(() => {
-    const newErrors: Partial<FormData> = {};
+    const newErrors: FormErrors = {};
     
     switch (currentStep) {
       case 1:
@@ -281,7 +292,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                   postalCode: addressData.postalCode || '',
                   placeId: addressData.placeId || ''
                 }));
-                if (errors.address) setErrors(prev => ({ ...prev, address: '' }));
+                if (errors.address) setErrors(prev => ({ ...prev, address: undefined }));
               }}
               error={errors.address}
             />
@@ -303,7 +314,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                 value={formData.fullName}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, fullName: e.target.value }));
-                  if (errors.fullName) setErrors(prev => ({ ...prev, fullName: '' }));
+                  if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
                 }}
                 placeholder="Enter your full name"
                 className={`w-full px-4 py-3 border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900`}
@@ -330,7 +341,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                 onChange={(e) => {
                   const formatted = formatPhoneNumber(e.target.value);
                   setFormData(prev => ({ ...prev, phone: formatted }));
-                  if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
+                  if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
                 }}
                 placeholder="(555) 123-4567"
                 className={`w-full px-4 py-3 border-2 ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900`}
@@ -361,7 +372,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                 value={formData.email}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, email: e.target.value }));
-                  if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+                  if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 placeholder="your@email.com"
                 className={`w-full px-4 py-3 border-2 ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900`}
@@ -386,7 +397,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                   checked={formData.consent}
                   onChange={(e) => {
                     setFormData(prev => ({ ...prev, consent: e.target.checked }));
-                    if (errors.consent) setErrors(prev => ({ ...prev, consent: '' }));
+                    if (errors.consent) setErrors(prev => ({ ...prev, consent: undefined }));
                   }}
                   aria-required="true"
                   aria-invalid={!!errors.consent}
@@ -416,7 +427,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                 value={formData.propertyCondition}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, propertyCondition: e.target.value }));
-                  if (errors.propertyCondition) setErrors(prev => ({ ...prev, propertyCondition: '' }));
+                  if (errors.propertyCondition) setErrors(prev => ({ ...prev, propertyCondition: undefined }));
                 }}
                 className={`w-full px-4 py-3 border-2 ${errors.propertyCondition ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900`}
                 aria-label="Property condition"
@@ -445,7 +456,7 @@ const MultiStepPropertyForm = React.memo(function MultiStepPropertyForm() {
                 value={formData.timeline}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, timeline: e.target.value }));
-                  if (errors.timeline) setErrors(prev => ({ ...prev, timeline: '' }));
+                  if (errors.timeline) setErrors(prev => ({ ...prev, timeline: undefined }));
                 }}
                 className={`w-full px-4 py-3 border-2 ${errors.timeline ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900`}
                 aria-label="Selling timeline"
