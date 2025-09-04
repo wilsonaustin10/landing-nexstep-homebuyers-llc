@@ -12,7 +12,7 @@ export default function ThankYouPage() {
     if (typeof window !== 'undefined' && window.gtag) {
       // Track conversion on thank you page
       window.gtag('event', 'conversion', {
-        'send_to': 'AW-16906023932/tFNHCNnqi48bEPzntf0',
+        'send_to': 'AW-16906023932/tFNHCNnqi48bEPzntf0-',
         'value': 1.0,
         'currency': 'USD'
       });

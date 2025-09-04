@@ -9,9 +9,9 @@ export default function TestConversionPage() {
 
   const testConversion = () => {
     if (typeof window !== 'undefined' && window.gtag) {
-      console.log('Firing conversion with label: tFNHCNnqi48bEPzntf0');
+      console.log('Firing conversion with label: tFNHCNnqi48bEPzntf0-');
       window.gtag('event', 'conversion', {
-        'send_to': 'AW-16906023932/tFNHCNnqi48bEPzntf0',
+        'send_to': 'AW-16906023932/tFNHCNnqi48bEPzntf0-',
         'value': 1.0,
         'currency': 'USD'
       });
@@ -34,7 +34,7 @@ export default function TestConversionPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Test Conversion Tracking</h2>
           <p className="text-gray-600 mb-4">
-            This page tests the Google Ads conversion tracking with the label: <code className="bg-gray-100 px-2 py-1 rounded">tFNHCNnqi48bEPzntf0</code>
+            This page tests the Google Ads conversion tracking with the label: <code className="bg-gray-100 px-2 py-1 rounded">tFNHCNnqi48bEPzntf0-</code>
           </p>
           <p className="text-gray-600 mb-4">
             Account ID: <code className="bg-gray-100 px-2 py-1 rounded">AW-16906023932</code>
@@ -70,7 +70,7 @@ export default function TestConversionPage() {
             <li>Go to the Network tab</li>
             <li>Filter by "conversion" or look for requests to googleads.g.doubleclick.net</li>
             <li>Click "Fire Test Conversion" and check if the request contains the correct label</li>
-            <li>The request URL should include: /pagead/1p-conversion/16906023932/?...label=tFNHCNnqi48bEPzntf0</li>
+            <li>The request URL should include: /pagead/1p-conversion/16906023932/?...label=tFNHCNnqi48bEPzntf0-</li>
           </ol>
         </div>
       </div>
