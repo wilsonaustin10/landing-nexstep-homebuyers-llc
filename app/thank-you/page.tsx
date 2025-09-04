@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { CheckCircle, Clock, Phone, ArrowRight } from 'lucide-react';
 import { trackEvent } from '../../utils/analytics';
 
 export default function ThankYouPage() {
-  const router = useRouter();
 
   useEffect(() => {
     trackEvent('thank_you_page_view');
@@ -14,7 +12,7 @@ export default function ThankYouPage() {
     if (typeof window !== 'undefined' && window.gtag) {
       // Track conversion on thank you page
       window.gtag('event', 'conversion', {
-        'send_to': 'AW-16906023932/thank_you',
+        'send_to': 'AW-16906023932/4DprCPfG3ZMbELiiz94_',
         'value': 1.0,
         'currency': 'USD'
       });
