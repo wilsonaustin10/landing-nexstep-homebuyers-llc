@@ -97,9 +97,10 @@ export function useGooglePlaces(
         );
 
         // Add place_changed listener with enhanced logging and caching
-        const listener = autocompleteRef.current.addListener('place_changed', () => {
-          const place = autocompleteRef.current?.getPlace();
-          if (!place?.formatted_address) return;
+        if (autocompleteRef.current) {
+          const listener = autocompleteRef.current.addListener('place_changed', () => {
+            const place = autocompleteRef.current?.getPlace();
+            if (!place?.formatted_address) return;
 
           // Log API call for monitoring
           apiCallCountRef.current++;
@@ -194,6 +195,7 @@ export function useGooglePlaces(
         };
 
         inputRef.current.addEventListener('input', handleInput);
+        }
 
         console.log('Google Places Autocomplete initialized successfully');
         googlePlacesMonitor.logApiCall('autocomplete_ready');
