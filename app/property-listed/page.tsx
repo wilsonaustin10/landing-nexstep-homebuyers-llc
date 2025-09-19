@@ -15,10 +15,10 @@ export default function PropertyListedPage() {
     // Track partial lead conversion when user reaches this page
     trackEvent('property_listed_page_view');
     
-    // Google Ads conversion tracking for partial lead
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'conversion', {
-        'send_to': 'AW-16906023932/property_listed',
+    // Track via GTM dataLayer instead
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        'event': 'property_listed_submission'
       });
     }
   }, []);

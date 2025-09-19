@@ -3,7 +3,6 @@ import './globals.css';
 import OptimizedClientLayout from '../components/OptimizedClientLayout';
 import Script from 'next/script';
 import CriticalCSS from '../components/CriticalCSS';
-import GoogleAnalytics from '../components/GoogleAnalytics';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -53,7 +52,6 @@ export default function RootLayout({
         <OptimizedClientLayout>
           {children}
         </OptimizedClientLayout>
-        <GoogleAnalytics />
       </body>
     </html>
   );

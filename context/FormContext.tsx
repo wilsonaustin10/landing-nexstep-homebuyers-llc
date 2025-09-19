@@ -215,20 +215,17 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
       if (result.success) {
         clearFormData();
-        // Track successful submission
-        if (typeof window !== 'undefined') {
-          // CRITICAL: Track the Google Ads conversion that's being monitored
-          (window as any).gtag?.('event', 'conversion', {
-            'send_to': 'AW-16906023932/contact_form',
+        // Track successful submission via GTM
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          // Push conversion event to dataLayer for GTM
+          (window as any).dataLayer.push({
+            'event': 'form_submission_success',
+            'event_category': 'Lead',
             'value': 1.0,
             'currency': 'USD'
           });
           
-          // Also track general analytics event
-          (window as any).gtag?.('event', 'form_submission_success', {
-            event_category: 'Lead',
-            event_label: 'Complete'
-          });
+          // Track Facebook Pixel and Hotjar events
           (window as any).fbq?.('track', 'Lead');
           (window as any).hj?.('trigger', 'form_submission_success');
         }
