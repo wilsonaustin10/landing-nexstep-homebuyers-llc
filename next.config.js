@@ -7,6 +7,16 @@ const nextConfig = {
   // Enable static optimization
   reactStrictMode: true,
   poweredByHeader: false,
+  
+  // Performance optimizations
+  compress: true,
+  optimizeFonts: true,
+  swcMinify: true,
+  
+  // Experimental performance features
+  experimental: {
+    optimizePackageImports: ['@heroicons/react'],
+  },
   // Configure image domains if needed
   images: {
     domains: ['localhost', 'offer.goservebig.com', 'firebasestorage.googleapis.com'],
@@ -20,6 +30,18 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: `frame-ancestors 'self' https://offer.goservebig.com`
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
           }
         ]
       }

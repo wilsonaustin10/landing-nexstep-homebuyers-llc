@@ -1,9 +1,15 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import ClientLayout from '../components/ClientLayout';
+import OptimizedClientLayout from '../components/OptimizedClientLayout';
 import Script from 'next/script';
+import CriticalCSS from '../components/CriticalCSS';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
+});
 
 export default function RootLayout({
   children,
@@ -15,11 +21,12 @@ export default function RootLayout({
       <head>
         {/* Google Site Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="google-site-verification-code" />
+        <CriticalCSS />
       </head>
       <body className={inter.className}>
-        <ClientLayout>
+        <OptimizedClientLayout>
           {children}
-        </ClientLayout>
+        </OptimizedClientLayout>
       </body>
     </html>
   );

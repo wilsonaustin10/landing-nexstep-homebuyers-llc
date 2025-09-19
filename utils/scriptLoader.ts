@@ -6,7 +6,7 @@ interface ScriptCache {
 
 const scriptCache: ScriptCache = {};
 
-export function loadScript(src: string, id?: string): Promise<void> {
+export function loadScript(src: string, id?: string, priority: 'high' | 'low' = 'low'): Promise<void> {
   // Return cached promise if script is already loading/loaded
   const cached = scriptCache[src];
   if (cached) {
@@ -28,6 +28,14 @@ export function loadScript(src: string, id?: string): Promise<void> {
     script.src = src;
     script.async = true;
     script.defer = true;
+    
+    // Use fetchpriority for high priority scripts
+    if (priority === 'high') {
+      script.setAttribute('fetchpriority', 'high');
+    } else {
+      script.setAttribute('fetchpriority', 'low');
+    }
+    
     if (id) script.id = id;
 
     script.onload = () => {
@@ -36,7 +44,12 @@ export function loadScript(src: string, id?: string): Promise<void> {
     };
     script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
 
-    document.head.appendChild(script);
+    // Append to body instead of head for lower priority
+    if (priority === 'low') {
+      document.body.appendChild(script);
+    } else {
+      document.head.appendChild(script);
+    }
   });
 
   return scriptCache[src];
@@ -111,7 +124,7 @@ export function loadGoogleTag(): Promise<void> {
 }
 
 // Preload function that adds link tag without executing
-export function preloadScript(src: string): void {
+export function preloadScript(src: string, priority: 'high' | 'low' = 'low'): void {
   const existingPreload = document.querySelector(`link[href="${src}"]`);
   if (existingPreload) return;
 
@@ -119,6 +132,13 @@ export function preloadScript(src: string): void {
   preload.rel = 'preload';
   preload.as = 'script';
   preload.href = src;
+  preload.setAttribute('fetchpriority', priority);
+  
+  // Add crossorigin for better caching
+  if (src.includes('googleapis.com') || src.includes('googletagmanager.com')) {
+    preload.setAttribute('crossorigin', 'anonymous');
+  }
+  
   document.head.appendChild(preload);
 }
 
