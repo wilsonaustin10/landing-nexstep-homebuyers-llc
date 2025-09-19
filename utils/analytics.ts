@@ -1,10 +1,3 @@
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag: (...args: any[]) => void;
-  }
-}
-
 export const initializeAnalytics = () => {
   if (typeof window !== 'undefined') {
     const script = document.createElement('script');

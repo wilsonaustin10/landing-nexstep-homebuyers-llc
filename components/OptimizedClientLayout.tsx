@@ -17,10 +17,7 @@ const LazyRecaptcha = dynamic(() => import('./LazyRecaptcha'), {
   loading: () => null
 });
 
-const OptimizedGoogleTagV2 = dynamic(() => import('./OptimizedGoogleTagV2'), {
-  ssr: false,
-  loading: () => null
-});
+// Removed OptimizedGoogleTagV2 - now using GoogleAnalytics in layout.tsx
 
 const LazyDebuggers = dynamic(() => import('./LazyDebuggers'), {
   ssr: false,
@@ -45,7 +42,6 @@ export default function OptimizedClientLayout({
         <Suspense fallback={null}>
           <OptimizedGoogleMaps />
           <LazyRecaptcha />
-          <OptimizedGoogleTagV2 />
           <LazyDebuggers />
         </Suspense>
       </FormProvider>
