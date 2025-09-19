@@ -2,6 +2,9 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Home } from 'lucide-react';
+import { createGoogleMapsFacade } from '../utils/scriptLoader';
+
+const googleMapsFacade = createGoogleMapsFacade();
 
 interface AddressAutocompleteProps {
   value: string;
@@ -78,6 +81,18 @@ export default function AddressAutocomplete({
       console.error('AddressAutocomplete: Error creating autocomplete instance', error);
     }
   }, [onChange]);
+
+  // Load Google Maps on focus
+  const handleFocus = useCallback(() => {
+    if (!googleMapsFacade.isLoaded() && !isLoaded) {
+      googleMapsFacade.load().then(() => {
+        setIsLoaded(true);
+        initializeAutocomplete();
+      }).catch(err => {
+        console.error('Failed to load Google Maps:', err);
+      });
+    }
+  }, [isLoaded, initializeAutocomplete]);
 
   useEffect(() => {
     // Check if Google Maps is already loaded
@@ -156,11 +171,13 @@ export default function AddressAutocomplete({
         value={value}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
         onBlur={onBlur}
         placeholder={placeholder}
         className={className}
         autoFocus={autoFocus}
         autoComplete="off"
+        data-address-input="true"
         aria-label="Property address"
         aria-required="true"
         aria-invalid={!!error}

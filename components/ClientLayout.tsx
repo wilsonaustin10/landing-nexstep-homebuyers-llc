@@ -3,11 +3,10 @@
 import { FormProvider } from '../context/FormContext';
 import Header from './Header';
 import Footer from './Footer';
-import GoogleTagDebugger from './GoogleTagDebugger';
-import GooglePlacesDebugger from './GooglePlacesDebugger';
-import LazyGoogleMaps from './LazyGoogleMaps';
+import OptimizedGoogleMaps from './OptimizedGoogleMaps';
 import LazyRecaptcha from './LazyRecaptcha';
-import OptimizedGoogleTag from './OptimizedGoogleTag';
+import OptimizedGoogleTagV2 from './OptimizedGoogleTagV2';
+import LazyDebuggers from './LazyDebuggers';
 
 export default function ClientLayout({
   children,
@@ -16,9 +15,9 @@ export default function ClientLayout({
 }) {
   return (
     <>
-      <LazyGoogleMaps />
+      <OptimizedGoogleMaps />
       <LazyRecaptcha />
-      <OptimizedGoogleTag />
+      <OptimizedGoogleTagV2 />
       
       <FormProvider>
         <Header />
@@ -26,8 +25,7 @@ export default function ClientLayout({
           {children}
         </main>
         <Footer />
-        <GoogleTagDebugger />
-        <GooglePlacesDebugger />
+        <LazyDebuggers />
       </FormProvider>
     </>
   );
