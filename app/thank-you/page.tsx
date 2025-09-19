@@ -9,10 +9,10 @@ export default function ThankYouPage() {
   useEffect(() => {
     trackEvent('thank_you_page_view');
     
-    // Track Google Ads conversion when thank you page loads
+    // Track Google Ads conversion for successful form submission
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'conversion', {
-        'send_to': 'AW-16906023932',
+        'send_to': 'AW-16906023932/Xl1jCN_Hz50bEPzntf0-',
         'value': 1.0,
         'currency': 'USD'
       });
