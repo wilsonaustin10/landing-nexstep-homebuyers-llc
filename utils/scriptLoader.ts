@@ -149,42 +149,51 @@ export function createGoogleMapsFacade() {
 // Facade pattern for Google Tag - minimal initial load  
 export function createGoogleTagFacade() {
   let tagPromise: Promise<void> | null = null;
+  let realGtagLoaded = false;
   
   // Queue events before gtag loads
-  const eventQueue: Array<{ name: string; params: any }> = [];
+  const eventQueue: Array<{ command: string; args: any[] }> = [];
   
   const processQueue = () => {
-    if ((window as any).gtag && eventQueue.length > 0) {
-      eventQueue.forEach(({ name, params }) => {
-        (window as any).gtag('event', name, params);
+    if (realGtagLoaded && (window as any).gtag && eventQueue.length > 0) {
+      const originalGtag = (window as any).gtag;
+      eventQueue.forEach(({ command, args }) => {
+        originalGtag(command, ...args);
       });
       eventQueue.length = 0;
     }
   };
 
+  // Set up a minimal gtag stub that queues events
+  if (typeof window !== 'undefined' && !(window as any).gtag) {
+    window.dataLayer = window.dataLayer || [];
+    (window as any).gtag = function(...args: any[]) {
+      if (realGtagLoaded) {
+        // If real gtag is loaded, push to dataLayer
+        window.dataLayer.push(args);
+      } else {
+        // Queue the event
+        eventQueue.push({ command: args[0], args: args.slice(1) });
+      }
+    };
+  }
+
   return {
     load: () => {
       if (!tagPromise) {
         tagPromise = loadGoogleTag().then(() => {
+          realGtagLoaded = true;
           processQueue();
         });
       }
       return tagPromise;
     },
     isLoaded: () => {
-      return Boolean((window as any).gtag);
+      return realGtagLoaded;
     },
     trackEvent: (name: string, params: any) => {
-      if ((window as any).gtag) {
+      if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', name, params);
-      } else {
-        eventQueue.push({ name, params });
-        // Trigger load on first event
-        if (!tagPromise) {
-          tagPromise = loadGoogleTag().then(() => {
-            processQueue();
-          });
-        }
       }
     },
     preload: () => {

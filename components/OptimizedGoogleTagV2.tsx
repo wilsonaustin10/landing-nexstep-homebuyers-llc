@@ -12,15 +12,6 @@ export default function OptimizedGoogleTagV2() {
     // Preload the script
     googleTagFacade.preload();
 
-    // Set up a minimal gtag stub that queues events
-    if (typeof window !== 'undefined' && !(window as any).gtag) {
-      window.dataLayer = window.dataLayer || [];
-      (window as any).gtag = function(...args: any[]) {
-        // Queue events until real gtag loads
-        googleTagFacade.trackEvent(args[1], args[2]);
-      };
-    }
-
     const loadGoogleTag = () => {
       if (!hasLoaded.current && !googleTagFacade.isLoaded()) {
         hasLoaded.current = true;
