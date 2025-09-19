@@ -99,7 +99,10 @@ export function loadGoogleTag(): Promise<void> {
     }
     (window as any).gtag = gtag;
     gtag('js', new Date());
-    gtag('config', 'AW-16906023932');
+    gtag('config', 'AW-16906023932', {
+      'page_path': window.location.pathname,
+      'send_page_view': true
+    });
     
     if (process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) {
       gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
@@ -172,13 +175,16 @@ export function createGoogleTagFacade() {
   let realGtagLoaded = false;
   
   // Queue events before gtag loads
-  const eventQueue: Array<{ command: string; args: any[] }> = [];
+  const eventQueue: Array<any[]> = [];
   
   const processQueue = () => {
     if (realGtagLoaded && (window as any).gtag && eventQueue.length > 0) {
-      const originalGtag = (window as any).gtag;
-      eventQueue.forEach(({ command, args }) => {
-        originalGtag(command, ...args);
+      // Get the real gtag function
+      const realGtag = (window as any).gtag;
+      
+      // Process queued events
+      eventQueue.forEach((args) => {
+        realGtag(...args);
       });
       eventQueue.length = 0;
     }
@@ -189,13 +195,19 @@ export function createGoogleTagFacade() {
     window.dataLayer = window.dataLayer || [];
     (window as any).gtag = function(...args: any[]) {
       if (realGtagLoaded) {
-        // If real gtag is loaded, push to dataLayer
+        // If real gtag is loaded, push to dataLayer directly
         window.dataLayer.push(args);
       } else {
-        // Queue the event
-        eventQueue.push({ command: args[0], args: args.slice(1) });
+        // Queue the entire args array for later processing
+        eventQueue.push(args);
       }
     };
+    
+    // Initialize gtag with js command immediately (for Tag Assistant)
+    (window as any).gtag('js', new Date());
+    (window as any).gtag('config', 'AW-16906023932', { 
+      'send_page_view': false // Prevent double pageviews 
+    });
   }
 
   return {
@@ -203,7 +215,17 @@ export function createGoogleTagFacade() {
       if (!tagPromise) {
         tagPromise = loadGoogleTag().then(() => {
           realGtagLoaded = true;
+          // Process any queued events
           processQueue();
+          
+          // Send a pageview event now that the real gtag is loaded
+          if ((window as any).gtag) {
+            (window as any).gtag('event', 'page_view', {
+              'page_path': window.location.pathname,
+              'page_title': document.title,
+              'page_location': window.location.href
+            });
+          }
         });
       }
       return tagPromise;
