@@ -31,10 +31,12 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               
-              // Set default consent to 'denied' for all users before GTM loads
+              // Set a default of 'denied' for ALL consent types
               gtag('consent', 'default', {
                 'ad_storage': 'denied',
-                'analytics_storage': 'denied'
+                'analytics_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied'
               });
             `,
           }}
