@@ -22,6 +22,23 @@ export default function RootLayout({
         {/* Google Site Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="google-site-verification-code" />
         <CriticalCSS />
+        {/* Default Consent Mode - Set to denied initially */}
+        <Script
+          id="consent-mode"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              
+              // Set default consent to 'denied' for all users before GTM loads
+              gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'analytics_storage': 'denied'
+              });
+            `,
+          }}
+        />
         {/* Google Tag Manager */}
         <Script
           id="gtm-script"
