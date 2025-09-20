@@ -24,7 +24,7 @@ export default function ThankYouPage() {
           <div className="flex justify-center mb-6">
             <CheckCircle className="h-16 w-16 text-green-500" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 id="form-success-heading" className="text-4xl font-bold text-gray-900 mb-4">
             Thank You! We've Received Your Information
           </h1>
           <p className="text-xl text-gray-600">
